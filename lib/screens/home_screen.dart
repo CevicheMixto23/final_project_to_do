@@ -1,3 +1,5 @@
+import 'package:final_project_to_do/models/task_model.dart';
+import 'package:final_project_to_do/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -86,13 +88,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    TaskList(
-                        tareas: tareas,
-                        onCheckboxChanged: (index, newValue) {
-                          setState(() {
-                            tareas[index].doneTask = newValue;
-                          });
-                        }),
+                    FutureBuilder(
+                      future: getTasks(),
+                      builder: (context,snapshot) {
+                        if (snapshot.hasData == false) {
+                          return const Center(child: CircularProgressIndicator());
+                        }else {
+                        return TaskList(
+                          tareas: snapshot.data,
+                          onCheckboxChanged: (index, newValue) {
+                            setState(() {
+                              //snapshot.data![index].doneTask = newValue;
+                            });
+                          },
+                        );
+                        }
+                      },
+                    ),
                     const SizedBox(
                       height: 40,
                     ),
@@ -106,13 +118,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    TaskDoneList(
-                      tareas: tareasHechas,
-                      onCheckboxChanged: (index, newValue) {
-                        setState(() {
-                          //tareasHechas[index].doneTask = newValue;
-                        });
-                      },
+                    FutureBuilder(
+                      future: getTasksDone(),
+                      builder: (context,snapshot) { 
+                      return TaskDoneList(
+                        tareas: snapshot.data,
+                        onCheckboxChanged: (index, newValue) {
+                          setState(() {
+                            //tareasHechas[index].doneTask = newValue;
+                          });
+                        },
+                      );}
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 6.0),
@@ -196,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class TaskList extends StatelessWidget {
-  final List<TaskExample> tareas;
+  final List<Task>? tareas;
   final Function(int, bool?) onCheckboxChanged;
   const TaskList(
       {super.key, required this.tareas, required this.onCheckboxChanged});
@@ -208,7 +224,7 @@ class TaskList extends StatelessWidget {
       height: size.height * 0.25,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: tareas.length,
+          itemCount: tareas?.length,
           itemBuilder: (context, index) {
             return Container(
               width: size.width * 0.5,
@@ -231,7 +247,7 @@ class TaskList extends StatelessWidget {
                           child: Transform.scale(
                             scale: 1.5,
                             child: Checkbox(
-                              value: tareas[index].doneTask ?? false,
+                              value: tareas?[index].doneTask ?? false,
                               onChanged: (newBool) {
                                 onCheckboxChanged(index, newBool);
                               },
@@ -256,7 +272,7 @@ class TaskList extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 10.0, bottom: 30),
                       child: Text(
-                        tareas[index].nameTask,
+                        tareas?[index].nameTask ?? "",
                         style: GoogleFonts.rowdies(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -274,7 +290,7 @@ class TaskList extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20)),
                           Text(
-                            tareas[index].deadlineTask,
+                            tareas?[index].deadlineTask.toString() ?? "" ,
                             style: GoogleFonts.rowdies(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -293,7 +309,7 @@ class TaskList extends StatelessWidget {
 }
 
 class TaskDoneList extends StatelessWidget {
-  final List<TaskExample> tareas;
+  final List<Task>? tareas;
   final Function(int, bool?) onCheckboxChanged;
   const TaskDoneList(
       {super.key, required this.tareas, required this.onCheckboxChanged});
@@ -305,7 +321,7 @@ class TaskDoneList extends StatelessWidget {
       height: size.height * 0.25,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: tareas.length,
+          itemCount: tareas?.length,
           itemBuilder: (context, index) {
             return Container(
               width: size.width * 0.5,
@@ -328,7 +344,7 @@ class TaskDoneList extends StatelessWidget {
                           child: Transform.scale(
                             scale: 1.5,
                             child: Checkbox(
-                              value: tareas[index].doneTask ?? false,
+                              value: tareas?[index].doneTask ?? false,
                               onChanged: (newBool) {
                                 onCheckboxChanged(index, newBool);
                               },
@@ -353,7 +369,7 @@ class TaskDoneList extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 10.0, bottom: 30),
                       child: Text(
-                        tareas[index].nameTask,
+                        tareas?[index].nameTask ?? "",
                         style: GoogleFonts.rowdies(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -371,7 +387,7 @@ class TaskDoneList extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20)),
                           Text(
-                            tareas[index].deadlineTask,
+                            tareas?[index].deadlineTask.toString()  ?? "",
                             style: GoogleFonts.rowdies(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,

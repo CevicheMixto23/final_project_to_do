@@ -1,7 +1,20 @@
-class TaskExample { 
+
+
+import 'package:intl/intl.dart';
+
+class Task { 
   String nameTask;
-  bool? doneTask;
+  bool doneTask;
   String deadlineTask;
 
-  TaskExample(this.nameTask,this.doneTask,this.deadlineTask);
+  Task(this.nameTask,this.doneTask,this.deadlineTask);
+
+  DateTime strToDateTime(String str){   
+    return DateTime.parse(str);
+  }
+
+  String dateTimeToStr(DateTime dateTime){
+    return DateFormat('dd-MM-yyyy').format(dateTime);
+  }
+
 }
