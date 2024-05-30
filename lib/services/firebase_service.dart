@@ -22,6 +22,7 @@ Future<List<Task>> getTasks() async {
 }
 
 Future<List<Task>> getTasksDone() async {
+
   List<Task> tasks = [];
   CollectionReference tasksCollection = db.collection('tasks');
   QuerySnapshot queryTask = await tasksCollection.where('isDone',isEqualTo: true).get();
@@ -36,4 +37,8 @@ Future<List<Task>> getTasksDone() async {
   });
 
   return tasks;
+}
+
+Future<void> addTask(Task task) async {
+  await db.collection('tasks').add(task.toJson());
 }

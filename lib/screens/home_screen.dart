@@ -3,13 +3,6 @@ import 'package:final_project_to_do/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class TaskExample {
-  String nameTask;
-  bool? doneTask;
-  String deadlineTask;
-
-  TaskExample(this.nameTask, this.doneTask, this.deadlineTask);
-}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,24 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Define las listas de tareas como propiedades del estado
-  List<TaskExample> tareas = [
-    TaskExample("Tarea Matematica", false, "15-06-2024"),
-    TaskExample("Tarea Fisica", false, "15-06-2024"),
-    TaskExample("Tarea Ingles", false, "15-06-2024"),
-    TaskExample("Practicar Ruso", false, "15-06-2024"),
-    TaskExample("Sacar al perro", false, "15-06-2024")
-  ];
 
-  List<TaskExample> tareasHechas = [
-    TaskExample("Tarea Matematica", true, "15-06-2024"),
-    TaskExample("Tarea Fisica", true, "15-06-2024"),
-    TaskExample("Tarea Ingles", true, "15-06-2024"),
-    TaskExample("Practicar Ruso", true, "15-06-2024"),
-    TaskExample("Sacar al perro", true, "15-06-2024")
-  ];
-
-  DateTime? _dateTime;
 
   @override
   Widget build(BuildContext context) {
@@ -129,16 +105,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           });
                         },
                       );}
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 6.0),
-                      child: Text(
-                        "$_dateTime",
-                        style: GoogleFonts.rowdies(fontSize: 30),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
                     )
                   ],
                 ),
@@ -158,55 +124,87 @@ class _HomeScreenState extends State<HomeScreen> {
             showDialog(
                 context: context,
                 builder: (context) {
-                  return AlertDialog(
-                    title: const Text("Agregar Tarea"),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const TextField(
-                          decoration:
-                              InputDecoration(labelText: "Nombre de la tarea"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(2025))
-                                .then((value) {
-                              _dateTime = value;
-                              setState(() {});
-                            });
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Seleccionar fecha"),
-                              Icon(Icons.calendar_today_outlined)
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Cancelar")),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Agregar"))
-                    ],
-                  );
-                });
+                  return AddTaskWidget(onAdded: (task) {
+                    setState(() {
+                      addTask(task).then((_){
+                      Navigator.of(context).pop();
+                      });//tareas.add(task);
+                    });
+                  });
+            });
           },
           child: const Icon(Icons.add_outlined),
         ),
       ),
+    );
+  }
+}
+
+class AddTaskWidget extends StatefulWidget {
+  final Function(Task) onAdded;
+  const AddTaskWidget({
+    super.key,
+    required this.onAdded
+  });
+
+  @override
+  State<AddTaskWidget> createState() => _AddTaskWidgetState();
+}
+
+class _AddTaskWidgetState extends State<AddTaskWidget> {
+  TextEditingController taskController = TextEditingController(text: "");
+  String deadline = "";
+  Task task = Task("", false, "");
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text("Agregar Tarea"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: taskController,
+            decoration:
+                const InputDecoration(hintText: "Nombre de la tarea"),
+          ),
+          const SizedBox(height: 20),
+          TextButton(
+            onPressed: () {
+              showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2025)).then(
+                  (value) { 
+                    deadline = task.dateTimeToStr(value!);
+                    setState(() {
+                    });
+                  }
+                  );
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Seleccionar fecha"),
+                Icon(Icons.calendar_today_outlined)
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("Cancelar")),
+        TextButton(
+            onPressed: () async {
+              Task task = Task(taskController.text, false, deadline);
+              await widget.onAdded(task);
+            },
+            child: const Text("Agregar"))
+      ],
     );
   }
 }

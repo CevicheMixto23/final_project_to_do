@@ -1,6 +1,10 @@
 
 
+import 'dart:convert';
+
 import 'package:intl/intl.dart';
+
+String taskToJson(Task data) => json.encode(data.toJson());
 
 class Task { 
   String nameTask;
@@ -16,5 +20,10 @@ class Task {
   String dateTimeToStr(DateTime dateTime){
     return DateFormat('dd-MM-yyyy').format(dateTime);
   }
+  Map<String, dynamic> toJson() => {
+        "name": nameTask,
+        "isDone": doneTask,
+        "deadline": deadlineTask,
+  };
 
 }
