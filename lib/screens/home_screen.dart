@@ -91,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             await changeTaskStatus(snapshot.data![index].uid!, snapshot.data![index]);
                             _reloadTasks();
                           },
+                          reloadTasks: () {_reloadTasks();},
                         );
                         }
                       },
@@ -117,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           await changeTaskStatus(snapshot.data![index].uid!, snapshot.data![index]);
                           _reloadTasks();
                         },
+                        reloadTasks: () {_reloadTasks();},
                       );}
                     )
                   ],
@@ -179,6 +181,8 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
+            
+            maxLength: 15,
             controller: taskController,
             decoration:
                 const InputDecoration(hintText: "Nombre de la tarea"),
@@ -225,12 +229,18 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
   }
 }
 
-class TaskList extends StatelessWidget {
+class TaskList extends StatefulWidget {
   final List<Task>? tareas;
   final Function(int, bool?) onCheckboxChanged;
+  final Function() reloadTasks;
   const TaskList(
-      {super.key, required this.tareas, required this.onCheckboxChanged});
+      {super.key, required this.tareas, required this.onCheckboxChanged,required this.reloadTasks});
 
+  @override
+  State<TaskList> createState() => _TaskListState();
+}
+
+class _TaskListState extends State<TaskList> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -238,7 +248,7 @@ class TaskList extends StatelessWidget {
       height: size.height * 0.25,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: tareas?.length,
+          itemCount: widget.tareas?.length,
           itemBuilder: (context, index) {
             return Container(
               width: size.width * 0.5,
@@ -261,9 +271,9 @@ class TaskList extends StatelessWidget {
                           child: Transform.scale(
                             scale: 1.5,
                             child: Checkbox(
-                              value: tareas?[index].doneTask ?? false,
+                              value: widget.tareas?[index].doneTask ?? false,
                               onChanged: (newBool) async {
-                                await onCheckboxChanged(index, newBool);
+                                await widget.onCheckboxChanged(index, newBool);
                               },
                               activeColor: Colors.black,
                             ),
@@ -272,7 +282,18 @@ class TaskList extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(right: 10, top: 10),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showDialog(context: context, 
+                              builder: (context) { 
+                                return DeleteConfirmation(index: index,
+                                onElementDeleted: () async {                                 
+                                  await deleteTask(widget.tareas![index].uid!);
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.of(context).pop();
+                                  widget.reloadTasks();
+                                },);}
+                              );
+                            },
                             icon: const Icon(Icons.delete),
                             color: Colors.black,
                             iconSize: 35,
@@ -286,7 +307,7 @@ class TaskList extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 10.0, bottom: 30),
                       child: Text(
-                        tareas?[index].nameTask ?? "",
+                        widget.tareas?[index].nameTask ?? "",
                         style: GoogleFonts.rowdies(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -304,7 +325,7 @@ class TaskList extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20)),
                           Text(
-                            tareas?[index].deadlineTask.toString() ?? "" ,
+                            widget.tareas?[index].deadlineTask.toString() ?? "" ,
                             style: GoogleFonts.rowdies(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -322,12 +343,18 @@ class TaskList extends StatelessWidget {
   }
 }
 
-class TaskDoneList extends StatelessWidget {
+class TaskDoneList extends StatefulWidget {
   final List<Task>? tareas;
   final Function(int, bool?) onCheckboxChanged;
+  final Function() reloadTasks;
   const TaskDoneList(
-      {super.key, required this.tareas, required this.onCheckboxChanged});
+      {super.key, required this.tareas, required this.onCheckboxChanged, required this.reloadTasks});
 
+  @override
+  State<TaskDoneList> createState() => _TaskDoneListState();
+}
+
+class _TaskDoneListState extends State<TaskDoneList> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -335,7 +362,7 @@ class TaskDoneList extends StatelessWidget {
       height: size.height * 0.25,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: tareas?.length,
+          itemCount: widget.tareas?.length,
           itemBuilder: (context, index) {
             return Container(
               width: size.width * 0.5,
@@ -358,9 +385,9 @@ class TaskDoneList extends StatelessWidget {
                           child: Transform.scale(
                             scale: 1.5,
                             child: Checkbox(
-                              value: tareas?[index].doneTask ?? false,
+                              value: widget.tareas?[index].doneTask ?? false,
                               onChanged: (newBool) async {
-                                await onCheckboxChanged(index, newBool);
+                                await widget.onCheckboxChanged(index, newBool);
                               },
                               activeColor: Colors.black,
                             ),
@@ -370,7 +397,16 @@ class TaskDoneList extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 10, top: 10),
                           child: IconButton(
                             onPressed: () {
-                              
+                              showDialog(context: context, 
+                              builder: (context) { 
+                                return DeleteConfirmation(index: index,
+                                onElementDeleted: () async {                                 
+                                  await deleteTask(widget.tareas![index].uid!);
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.of(context).pop();
+                                  widget.reloadTasks();
+                                },);}
+                              );
                             },
                             icon: const Icon(Icons.delete),
                             color: Colors.black,
@@ -385,7 +421,7 @@ class TaskDoneList extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 10.0, bottom: 30),
                       child: Text(
-                        tareas?[index].nameTask ?? "",
+                        widget.tareas?[index].nameTask ?? "",
                         style: GoogleFonts.rowdies(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -403,7 +439,7 @@ class TaskDoneList extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20)),
                           Text(
-                            tareas?[index].deadlineTask.toString()  ?? "",
+                            widget.tareas?[index].deadlineTask.toString()  ?? "",
                             style: GoogleFonts.rowdies(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -417,6 +453,34 @@ class TaskDoneList extends StatelessWidget {
               ),
             );
           }),
+    );
+  }
+}
+
+class DeleteConfirmation extends StatelessWidget {
+  final int index;
+  final Future<void> Function() onElementDeleted;
+  const DeleteConfirmation({
+    super.key,
+    required this.index,
+    required this.onElementDeleted
+  });
+
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+    title: const Text("Eliminar tarea"),
+    content: const Text("¿Estás seguro de eliminar esta tarea?"),
+    actions: [
+      TextButton(onPressed: () {
+        Navigator.of(context).pop();
+      }, child: const Text("Cancelar")),
+      TextButton(onPressed: () {
+        onElementDeleted();
+      },
+      child: const Text("Eliminar"))
+    ],
     );
   }
 }

@@ -1,9 +1,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project_to_do/models/task_model.dart';
-
+//Instancia de la base de datos
 FirebaseFirestore db = FirebaseFirestore.instance;
-
+//Obtener las tareas
 Future<List<Task>> getTasks() async {
   List<Task> tasks = [];
   CollectionReference tasksCollection = db.collection('tasks');
@@ -23,6 +23,7 @@ Future<List<Task>> getTasks() async {
   return tasks;
 }
 
+//Obtener las tareas completadas
 Future<List<Task>> getTasksDone() async {
 
   List<Task> tasks = [];
@@ -43,10 +44,17 @@ Future<List<Task>> getTasksDone() async {
   return tasks;
 }
 
+//Agregar una tarea
 Future<void> addTask(Task task) async {
   await db.collection('tasks').add(task.toJson());
 }
 
+//Editar el estado de una tarea
 Future<void> changeTaskStatus(String uid,Task task) async {
   await db.collection('tasks').doc(uid).update({'isDone': !task.doneTask});
+}
+
+//Eliminar una tarea
+Future<void> deleteTask(String uid) async {
+  await db.collection('tasks').doc(uid).delete();
 }
