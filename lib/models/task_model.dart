@@ -10,8 +10,8 @@ class Task {
   String nameTask;
   bool doneTask;
   String deadlineTask;
-
-  Task(this.nameTask,this.doneTask,this.deadlineTask);
+  String? uid;
+  Task(this.nameTask,this.doneTask,this.deadlineTask,[this.uid]);
 
   DateTime strToDateTime(String str){   
     return DateTime.parse(str);

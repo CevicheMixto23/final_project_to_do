@@ -9,11 +9,13 @@ Future<List<Task>> getTasks() async {
   CollectionReference tasksCollection = db.collection('tasks');
   QuerySnapshot queryTask = await tasksCollection.where('isDone',isEqualTo: false).get();
 
+  // ignore: avoid_function_literals_in_foreach_calls
   queryTask.docs.forEach((doc) {
     Task task = Task(
       doc['name'],
       doc['isDone'],
       doc['deadline'],
+      doc.id
     );
     tasks.add(task);
   });
@@ -27,11 +29,13 @@ Future<List<Task>> getTasksDone() async {
   CollectionReference tasksCollection = db.collection('tasks');
   QuerySnapshot queryTask = await tasksCollection.where('isDone',isEqualTo: true).get();
   
+  // ignore: avoid_function_literals_in_foreach_calls
   queryTask.docs.forEach((doc) {
     Task task = Task(
       doc['name'],
       doc['isDone'],
       doc['deadline'],
+      doc.id
     );
     tasks.add(task);
   });
@@ -41,4 +45,8 @@ Future<List<Task>> getTasksDone() async {
 
 Future<void> addTask(Task task) async {
   await db.collection('tasks').add(task.toJson());
+}
+
+Future<void> changeTaskStatus(String uid,Task task) async {
+  await db.collection('tasks').doc(uid).update({'isDone': !task.doneTask});
 }

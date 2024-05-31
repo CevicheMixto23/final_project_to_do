@@ -12,8 +12,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late Future<List<Task>> _futureTasks;
+  late Future<List<Task>> _futureTasksDone;
 
+  void _reloadTasks() {
+    setState(() {
+      _futureTasks = getTasks();
+      _futureTasksDone = getTasksDone();  
+    });
+  }
+  @override
+  void initState() {
+    super.initState();
+    _futureTasks = getTasks(); 
+    _futureTasksDone = getTasksDone();
+  }
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,17 +80,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 20,
                     ),
                     FutureBuilder(
-                      future: getTasks(),
+                      future: _futureTasks,
                       builder: (context,snapshot) {
                         if (snapshot.hasData == false) {
                           return const Center(child: CircularProgressIndicator());
                         }else {
                         return TaskList(
                           tareas: snapshot.data,
-                          onCheckboxChanged: (index, newValue) {
-                            setState(() {
-                              //snapshot.data![index].doneTask = newValue;
-                            });
+                          onCheckboxChanged: (index, newValue) async {
+                            await changeTaskStatus(snapshot.data![index].uid!, snapshot.data![index]);
+                            _reloadTasks();
                           },
                         );
                         }
@@ -95,14 +109,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 20,
                     ),
                     FutureBuilder(
-                      future: getTasksDone(),
+                      future: _futureTasksDone,
                       builder: (context,snapshot) { 
                       return TaskDoneList(
                         tareas: snapshot.data,
-                        onCheckboxChanged: (index, newValue) {
-                          setState(() {
-                            //tareasHechas[index].doneTask = newValue;
-                          });
+                        onCheckboxChanged: (index, newValue) async {
+                          await changeTaskStatus(snapshot.data![index].uid!, snapshot.data![index]);
+                          _reloadTasks();
                         },
                       );}
                     )
@@ -130,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.of(context).pop();
                       });//tareas.add(task);
                     });
+                    _reloadTasks();
                   });
             });
           },
@@ -139,6 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+//
 
 class AddTaskWidget extends StatefulWidget {
   final Function(Task) onAdded;
@@ -246,8 +262,8 @@ class TaskList extends StatelessWidget {
                             scale: 1.5,
                             child: Checkbox(
                               value: tareas?[index].doneTask ?? false,
-                              onChanged: (newBool) {
-                                onCheckboxChanged(index, newBool);
+                              onChanged: (newBool) async {
+                                await onCheckboxChanged(index, newBool);
                               },
                               activeColor: Colors.black,
                             ),
@@ -257,7 +273,7 @@ class TaskList extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 10, top: 10),
                           child: IconButton(
                             onPressed: () {},
-                            icon: const Icon(Icons.more_horiz),
+                            icon: const Icon(Icons.delete),
                             color: Colors.black,
                             iconSize: 35,
                           ),
@@ -343,8 +359,8 @@ class TaskDoneList extends StatelessWidget {
                             scale: 1.5,
                             child: Checkbox(
                               value: tareas?[index].doneTask ?? false,
-                              onChanged: (newBool) {
-                                onCheckboxChanged(index, newBool);
+                              onChanged: (newBool) async {
+                                await onCheckboxChanged(index, newBool);
                               },
                               activeColor: Colors.black,
                             ),
@@ -353,8 +369,10 @@ class TaskDoneList extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(right: 10, top: 10),
                           child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.more_horiz),
+                            onPressed: () {
+                              
+                            },
+                            icon: const Icon(Icons.delete),
                             color: Colors.black,
                             iconSize: 35,
                           ),
