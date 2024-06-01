@@ -181,7 +181,6 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            
             maxLength: 15,
             controller: taskController,
             decoration:

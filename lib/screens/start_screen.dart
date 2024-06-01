@@ -9,17 +9,15 @@ class StartScreen extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 104, 142, 186),
       body: GestureDetector(
         onTap: () {
-          Navigator.pushReplacementNamed(context, "homeScreen");
+          Navigator.pushReplacementNamed(context, "loginScreen");
         },
         child: Stack(
-          // Use Stack for overlapping widgets
           children: [
             Center(
               // Center the logo
               child: Image.asset('assets/logo.png'),
             ),
             Positioned(
-              // Position the bottom image at the bottom right
               bottom: 0, // Anchor to the bottom
               right: 0, // Anchor to the right
               child: Image.asset(
