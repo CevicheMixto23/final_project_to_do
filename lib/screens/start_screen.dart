@@ -6,7 +6,7 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 104, 142, 186),
+      backgroundColor: Colors.blueGrey,
       body: GestureDetector(
         onTap: () {
           Navigator.pushReplacementNamed(context, "loginScreen");

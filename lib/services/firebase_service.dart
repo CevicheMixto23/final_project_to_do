@@ -1,23 +1,22 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project_to_do/models/task_model.dart';
 import 'package:final_project_to_do/models/user_model.dart';
+
 //Instancia de la base de datos
 FirebaseFirestore db = FirebaseFirestore.instance;
 //Obtener las tareas
-Future<List<Task>> getTasks() async {
+Future<List<Task>> getTasks(String idUser) async {
   List<Task> tasks = [];
   CollectionReference tasksCollection = db.collection('tasks');
-  QuerySnapshot queryTask = await tasksCollection.where('isDone',isEqualTo: false).get();
+  QuerySnapshot queryTask = await tasksCollection
+      .where('isDone', isEqualTo: false)
+      .where('idUser', isEqualTo: idUser)
+      .get();
 
   // ignore: avoid_function_literals_in_foreach_calls
   queryTask.docs.forEach((doc) {
-    Task task = Task(
-      doc['name'],
-      doc['isDone'],
-      doc['deadline'],
-      doc.id
-    );
+    Task task =
+        Task(doc['name'], doc['isDone'], doc['deadline'], idUser, doc.id);
     tasks.add(task);
   });
 
@@ -25,20 +24,18 @@ Future<List<Task>> getTasks() async {
 }
 
 //Obtener las tareas completadas
-Future<List<Task>> getTasksDone() async {
-
+Future<List<Task>> getTasksDone(String idUser) async {
   List<Task> tasks = [];
   CollectionReference tasksCollection = db.collection('tasks');
-  QuerySnapshot queryTask = await tasksCollection.where('isDone',isEqualTo: true).get();
-  
+  QuerySnapshot queryTask = await tasksCollection
+      .where('isDone', isEqualTo: true)
+      .where('idUser', isEqualTo: idUser)
+      .get();
+
   // ignore: avoid_function_literals_in_foreach_calls
   queryTask.docs.forEach((doc) {
-    Task task = Task(
-      doc['name'],
-      doc['isDone'],
-      doc['deadline'],
-      doc.id
-    );
+    Task task =
+        Task(doc['name'], doc['isDone'], doc['deadline'], idUser, doc.id);
     tasks.add(task);
   });
 
@@ -51,7 +48,7 @@ Future<void> addTask(Task task) async {
 }
 
 //Editar el estado de una tarea
-Future<void> changeTaskStatus(String uid,Task task) async {
+Future<void> changeTaskStatus(String uid, Task task) async {
   await db.collection('tasks').doc(uid).update({'isDone': !task.doneTask});
 }
 
@@ -63,9 +60,8 @@ Future<void> deleteTask(String uid) async {
 //Agregar Usuario
 Future<bool> addUser(User user) async {
   CollectionReference usersCollection = db.collection('users');
-  QuerySnapshot querySnapshot = await usersCollection
-      .where('correo', isEqualTo: user.correo)
-      .get();
+  QuerySnapshot querySnapshot =
+      await usersCollection.where('correo', isEqualTo: user.correo).get();
   if (querySnapshot.docs.isEmpty) {
     await db.collection('users').add(user.toJson());
     return true;
@@ -74,22 +70,18 @@ Future<bool> addUser(User user) async {
   }
 }
 
-Future<bool> loginUser(User user) async {
+Future<String> loginUser(User user) async {
   CollectionReference usersCollection = db.collection('users');
-  QuerySnapshot querySnapshot = await usersCollection
-      .where('correo', isEqualTo: user.correo)
-      .get();
+  QuerySnapshot querySnapshot =
+      await usersCollection.where('correo', isEqualTo: user.correo).get();
   if (querySnapshot.docs.isEmpty) {
-      return false;
+    return '';
+  } else {
+    DocumentSnapshot doc = querySnapshot.docs.first;
+    if (doc['contrasena'] != user.contrasena) {
+      return '';
     } else {
-      DocumentSnapshot doc = querySnapshot.docs.first;
-      if (doc['contrasena'] != user.contrasena) {
-        return false;
-      } else {
-        return true;
-      }
+      return doc.id;
     }
+  }
 }
-
-
-

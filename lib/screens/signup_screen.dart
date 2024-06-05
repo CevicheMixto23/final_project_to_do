@@ -17,87 +17,103 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor:  const Color.fromARGB(255, 104, 142, 186),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.blueGrey,
       body: Column(
         children: [
-          const SizedBox(height: 100,),
+          const SizedBox(
+            height: 50,
+          ),
           Center(
-            child: Text('HAZLO', 
-            style: GoogleFonts.righteous(
-              fontSize: 100, 
-              color: Colors.black,
-              fontWeight: FontWeight.bold,    
-              )
-            ),
+            child: Text('HAZLO',
+                style: GoogleFonts.righteous(
+                  fontSize: 80,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                )),
           ),
-          Text('REGISTER', 
-            style: GoogleFonts.righteous(
-              fontSize: 40, 
-              color: Colors.black,
-              fontWeight: FontWeight.bold,    
-              )
+          Text('REGISTER',
+              style: GoogleFonts.righteous(
+                fontSize: 30,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              )),
+          const SizedBox(
+            height: 70,
           ),
-          const SizedBox(height: 100,),
           SizedBox(
             width: size.width * 0.7,
             child: TextField(
               controller: correoController,
               decoration: const InputDecoration(
-              hintText: 'Correo electronico',
-              fillColor: Colors.white,
-              filled: true,
-              border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10))
-              )
-             ),
-           ),
+                  hintText: 'Correo electronico',
+                  fillColor: Colors.white,
+                  filled: true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)))),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 40.0),
             child: SizedBox(
               width: size.width * 0.7,
               child: TextField(
+                obscureText: true,
                 controller: contrasenaController,
                 decoration: const InputDecoration(
-                hintText: 'Contraseña',
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10))
-                )
-               ),
-             ),
+                    hintText: 'Contraseña',
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)))),
+              ),
             ),
           ),
-          const SizedBox(height: 20,),
-          ElevatedButton(onPressed: (){
-            User user = User(correoController.text, contrasenaController.text);
-            addUser(user).then((isSuccesful){
-              if (isSuccesful){
-              showDialog(context: context, builder: (context) {
-                return AlertDialog(
-                title: const Text('Usuario Registrado'),
-                content: const Text('Usuario registrado correctamente'),
-                actions: [
-                  TextButton(onPressed: (){
-                    Navigator.pushReplacementNamed(context, "loginScreen");
-                  }, child: const Text('Aceptar'))
-                ]);           
-              });}
-              else{
-              showDialog(context: context, builder: (context) {
-                return AlertDialog(
-                title: const Text('Usuario Existente'),
-                content: const Text('¡Ya existe un usuario con ese correo electronico!'),
-                actions: [
-                  TextButton(onPressed: (){
-                    Navigator.pop(context);
-                  }, child: const Text('Aceptar'))
-                ]);           
-              });  
-              }
-              });
-          }, child: const Text('Registrarse'))
+          const SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+              onPressed: () {
+                User user =
+                    User(correoController.text, contrasenaController.text);
+                addUser(user).then((isSuccesful) {
+                  if (isSuccesful) {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                              title: const Text('Usuario Registrado'),
+                              content: const Text(
+                                  'Usuario registrado correctamente'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pushReplacementNamed(
+                                          context, "loginScreen");
+                                    },
+                                    child: const Text('Aceptar'))
+                              ]);
+                        });
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                              title: const Text('Usuario Existente'),
+                              content: const Text(
+                                  '¡Ya existe un usuario con ese correo electronico!'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Aceptar'))
+                              ]);
+                        });
+                  }
+                });
+              },
+              child: const Text('Registrarse'))
         ],
       ),
     );
