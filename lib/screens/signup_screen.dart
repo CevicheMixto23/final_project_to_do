@@ -13,6 +13,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController correoController = TextEditingController();
   TextEditingController contrasenaController = TextEditingController();
+  bool _isobscure = true;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -45,12 +46,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
             width: size.width * 0.7,
             child: TextField(
               controller: correoController,
-              decoration: const InputDecoration(
+              decoration:  InputDecoration(
                   hintText: 'Correo electronico',
+                  hintStyle: GoogleFonts.righteous(),
                   fillColor: Colors.white,
                   filled: true,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)))),
+                  border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                 ),
             ),
           ),
           Padding(
@@ -58,14 +61,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: SizedBox(
               width: size.width * 0.7,
               child: TextField(
-                obscureText: true,
+                obscureText: _isobscure,
                 controller: contrasenaController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                     hintText: 'Contraseña',
+                    hintStyle: GoogleFonts.righteous(),
                     fillColor: Colors.white,
                     filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)))),
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                     suffixIcon: IconButton(
+                      onPressed: (){
+                        setState(() {
+                          _isobscure = !_isobscure;
+                        });
+                      },
+                      icon: Icon(_isobscure? Icons.visibility:Icons.visibility_off,
+                    ))),
               ),
             ),
           ),

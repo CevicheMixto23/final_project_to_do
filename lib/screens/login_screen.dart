@@ -13,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController correo1Controller = TextEditingController();
   TextEditingController contrasena1Controller = TextEditingController();
+  bool _isobscure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +47,12 @@ class _LoginScreenState extends State<LoginScreen> {
             width: size.width * 0.7,
             child: TextField(
               controller: correo1Controller,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   hintText: 'Correo electronico',
+                  hintStyle: GoogleFonts.righteous(),
                   fillColor: Colors.white,
                   filled: true,
-                  border: OutlineInputBorder(
+                  border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)))),
             ),
           ),
@@ -59,14 +61,23 @@ class _LoginScreenState extends State<LoginScreen> {
             child: SizedBox(
               width: size.width * 0.7,
               child: TextField(
-                obscureText: true,
+                obscureText: _isobscure,
                 controller: contrasena1Controller,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                     hintText: 'Contraseña',
+                    hintStyle: GoogleFonts.righteous(),
                     fillColor: Colors.white,
                     filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)))),
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    suffixIcon: IconButton(
+                      onPressed: (){
+                        setState(() {
+                          _isobscure = !_isobscure;
+                        });
+                      },
+                      icon: Icon(_isobscure? Icons.visibility:Icons.visibility_off,
+                      )),),
               ),
             ),
           ),
@@ -74,9 +85,9 @@ class _LoginScreenState extends State<LoginScreen> {
             onPressed: () {
               Navigator.pushNamed(context, "signUpScreen");
             },
-            child: const Text(
+            child: Text(
               'Aún no tienes una cuenta ¡Regístrate ahora!',
-              style: TextStyle(
+              style: GoogleFonts.righteous(
                   decoration: TextDecoration.underline, color: Colors.black),
             ),
           ),
@@ -117,13 +128,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
-                                    child: const Text('Aceptar'))
+                                    child: const Text('Aceptar',))
                               ]);
                         });
                   }
                 });
               },
-              child: const Text('Iniciar sesión')),
+              child: Text('Iniciar sesión',style: GoogleFonts.righteous(),)),
         ],
       ),
     );

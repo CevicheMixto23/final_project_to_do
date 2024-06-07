@@ -16,8 +16,6 @@ class AppRouting {
         {"loginScreen": (BuildContext context) => const LoginScreen()});
     appRoute.addAll(
         {"signUpScreen": (BuildContext context) => const SignUpScreen()});
-    appRoute.addAll(
-        {"taskScreen": (BuildContext context) => const TaskScreen()});
 
     return appRoute;
   }

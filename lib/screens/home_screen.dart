@@ -26,19 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
     final parametro = ModalRoute.of(context)!.settings.arguments as String;
     _reloadTasks(parametro);
     return Scaffold(
+      drawer: const DrawerInfo(),
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
+         iconTheme: const IconThemeData(
+          color: Colors.white, // Cambia el color del ícono del Drawer a blanco
+        ),
         title: Center(
           child: Text('HAZLO',
               style: GoogleFonts.righteous(fontSize: 40, color: Colors.white)),
-        ),
-        leading: IconButton(
-          icon: Image.asset(
-            'assets/gato.png',
-            width: 40,
-            height: 40,
-          ),
-          onPressed: () {},
         ),
         actions: [
           IconButton(
@@ -101,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (snapshot.hasData == false) {
                           return const Center(
                               child: SizedBox(
-                            height: 100,
+                            height: 100,child: CircularProgressIndicator(),
                           ));
                           //CircularProgressIndicator());
                         } else {
@@ -138,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (snapshot.hasData == false) {
                             return const Center(
                                 child: SizedBox(
-                              height: 100,
+                              height: 100,child: CircularProgressIndicator()
                             ));
                             //CircularProgressIndicator());
                           } else {
@@ -196,6 +192,53 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+class DrawerInfo extends StatelessWidget {
+  const DrawerInfo({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    const String url = 'https://github.com/CevicheMixto23/final_project_to_do';
+    return Drawer(backgroundColor: Colors.blueGrey,
+    width: size.width *0.8,
+    child: Column(
+      children: [
+        Image.asset('assets/UPC.png'),        
+        Text("Información",style: GoogleFonts.righteous(fontSize: 40, color: Colors.white,fontWeight: FontWeight.bold),),
+        const SizedBox(height: 20,),
+        Text("HAZLO APP",style: GoogleFonts.righteous(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),),
+        const SizedBox(height: 20,),
+        Text("Aplicación desarrollada por:",
+          style: GoogleFonts.righteous(fontSize: 20, color: Colors.white),),
+        Text("Piero Alfaro",
+          style: GoogleFonts.righteous(fontSize: 20, color: Colors.black),)
+        ,
+        const SizedBox(height: 20,),
+        Text("Curso:",
+          style: GoogleFonts.righteous(fontSize: 20, color: Colors.white))
+        ,
+        Text("Flutter Básico UPC",
+          style: GoogleFonts.righteous(fontSize: 20, color: Colors.black))
+        ,const SizedBox(height: 20,),
+        Text("Dictado por:",
+          style: GoogleFonts.righteous(fontSize: 20, color: Colors.white))
+        ,
+        Text("Jean Marko Aguirre",
+          style: GoogleFonts.righteous(fontSize: 20, color: Colors.black)),
+        const SizedBox(height: 20,),
+        Text("Repositorio:",
+          style: GoogleFonts.righteous(fontSize: 20, color: Colors.white)),
+        Padding(
+          padding: const EdgeInsets.only(left: 80.0),
+          child: Text(url,style: GoogleFonts.righteous(fontSize: 20, color: Colors.black),),
+        ),
+      ],
+    ),);
+  }
+}
+
 //
 
 class AddTaskWidget extends StatefulWidget {
@@ -215,14 +258,15 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Agregar Tarea"),
+      title: Text("Agregar Tarea",style: GoogleFonts.righteous(color: Colors.black),),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             maxLength: 15,
             controller: taskController,
-            decoration: const InputDecoration(hintText: "Nombre de la tarea"),
+            decoration: InputDecoration(hintText: "Nombre de la tarea", 
+            hintStyle: GoogleFonts.righteous(color: Colors.black)),
           ),
           const SizedBox(height: 20),
           TextButton(
@@ -233,15 +277,17 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
                       firstDate: DateTime.now(),
                       lastDate: DateTime(2025))
                   .then((value) {
-                deadline = task.dateTimeToStr(value!);
+                  if (value == null) return;
+                deadline = task.dateTimeToStr(value);
                 setState(() {});
               });
             },
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Seleccionar fecha"),
-                Icon(Icons.calendar_today_outlined)
+                deadline == "" ? Text("Seleccionar fecha", style: GoogleFonts.righteous(fontSize: 20,fontWeight: FontWeight.bold),):
+                Text(deadline,style: GoogleFonts.righteous(fontSize: 20,fontWeight: FontWeight.bold)),
+                const Icon(Icons.calendar_today_outlined)
               ],
             ),
           ),
@@ -252,14 +298,14 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text("Cancelar")),
+            child: Text("Cancelar",style: GoogleFonts.righteous(),)),
         TextButton(
             onPressed: () async {
               Task task =
                   Task(taskController.text, false, deadline, widget.idUser);
               await widget.onAdded(task);
             },
-            child: const Text("Agregar"))
+            child: Text("Agregar",style: GoogleFonts.righteous(),))
       ],
     );
   }
